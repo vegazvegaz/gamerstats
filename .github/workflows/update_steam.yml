@@ -1,0 +1,21 @@
+name: Update Steam Stats
+on:
+  schedule:
+    - cron: '0 * * * *' # S'exécute toutes les heures
+  workflow_dispatch: # Permet de le lancer manuellement
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Fetch Steam Data
+        run: |
+          curl "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${{ secrets.STEAM_API_KEY }}&steamid=${{ secrets.STEAM_ID }}&format=json&include_appinfo=true" > steam_data.json
+      - name: Commit and push
+        run: |
+          git config --global user.name 'SteamBot'
+          git config --global user.email 'bot@gamerstats.com'
+          git add steam_data.json
+          git commit -m "Update steam stats" || exit 0
+          git push
