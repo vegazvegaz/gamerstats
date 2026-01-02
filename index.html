@@ -136,9 +136,9 @@
             <h1>Discover</h1>
             <div class="main-card">
                 <div>
-                    <div class="main-value">1 248<span style="font-size:24px; color:var(--accent-pink); margin-left:4px;">h</span></div>
+                    <div class="main-value" id="totalHoursDisplay">0<span style="font-size:24px; color:var(--accent-pink); margin-left:4px;">h</span></div>
                     <div class="main-card-stats">
-                        <div class="sub-stat"><span class="label">Jeux Lancés</span><span class="val">142</span></div>
+                        <div class="sub-stat"><span class="label">Jeux Lancés</span><span class="val" id="totalGamesDisplay">0</span></div>
                         <div class="sub-stat"><span class="label">Sessions</span><span class="val">842</span></div>
                     </div>
                 </div>
@@ -212,7 +212,7 @@
                 <span class="release-countdown" id="gta-timer">Calcul...</span>
             </div>
             <div class="coming-soon-card">
-                <div><b style="font-size:14px;">Death Stranding 2</b><br><span style="font-size:12px; color:var(--text-dim);">Disponible</span></div>
+                <div><b style="font-size:14px;">Death Stranding 2</b><br><span style="font-size:12px; color:var(--text-dim);">Sorti le 26 Juin 2025</span></div>
                 <span class="release-countdown" style="color:var(--accent-pink);">✓ DISPONIBLE</span>
             </div>
 
@@ -229,14 +229,8 @@
     </nav>
 
     <script>
-        const gamesData = [
-            { name: "Elden Ring", hours: 132, plat: ["steam", "ps5"], color: "#ffaa00", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/library_600x900.jpg", desc: "L'éclat de l'Ordre d'Or a été brisé. Dans l'Entre-terre, la Reine Marika l'Éternelle est introuvable." },
-            { name: "CrossCode", hours: 234, plat: ["steam", "ps5", "nintendo"], color: "#a220cf", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/368340/library_600x900.jpg", desc: "Un action-RPG rétro en 2D se déroulant dans un futur lointain." },
-            { name: "Hollow Knight", hours: 43, plat: "steam", color: "#00d2ff", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/library_600x900.jpg", desc: "Forgez votre propre chemin dans Hollow Knight !" },
-            { name: "The Witcher 3", hours: 156, plat: "steam", color: "#cc0000", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/library_600x900.jpg", desc: "La quête de Geralt de Riv pour retrouver Ciri." },
-            { name: "Cyberpunk 2077", hours: 92, plat: "steam", color: "#f3e600", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1091500/library_600x900.jpg", desc: "Une histoire d'action-aventure en monde ouvert." },
-            { name: "Baldur's Gate 3", hours: 120, plat: "steam", color: "#c0c0c0", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/library_600x900.jpg", desc: "Le RPG ultime basé sur Donjons & Dragons." }
-        ];
+        // --- REAL DATA LOADER ---
+        let gamesData = [];
 
         const backlogData = [
             { name: "Alan Wake 2", plat: "ps5", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1085660/library_600x900.jpg" },
@@ -244,6 +238,35 @@
             { name: "Outer Wilds", plat: "steam", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/753640/library_600x900.jpg" },
             { name: "Disco Elysium", plat: "steam", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632470/library_600x900.jpg" }
         ];
+
+        async function loadRealData() {
+            try {
+                const response = await fetch('steam_data.json');
+                const rawData = await response.json();
+                
+                // Transformation des données Steam au format de ton app
+                gamesData = rawData.response.games.map(game => ({
+                    name: game.name,
+                    hours: Math.round(game.playtime_forever / 60),
+                    plat: "steam",
+                    color: "#0A84FF",
+                    img: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${game.appid}/library_600x900.jpg`,
+                    desc: "Synchronisé depuis Steam."
+                }));
+
+                // Calculs des totaux pour le Dashboard
+                const totalHours = gamesData.reduce((acc, g) => acc + g.hours, 0);
+                document.getElementById('totalHoursDisplay').innerHTML = totalHours.toLocaleString() + '<span style="font-size:24px; color:var(--accent-pink); margin-left:4px;">h</span>';
+                document.getElementById('totalGamesDisplay').innerText = gamesData.length;
+
+                // Tri par heures jouées
+                gamesData.sort((a, b) => b.hours - a.hours);
+
+                initApp();
+            } catch (e) {
+                console.error("Erreur Steam:", e);
+            }
+        }
 
         function createCard(game, isCarousel = false) {
             const platforms = Array.isArray(game.plat) ? game.plat : [game.plat];
@@ -259,11 +282,9 @@
                 </div>`;
         }
 
-        // --- CALCUL DES COMPTES À REBOURS (POINT 3) ---
         function updateTimers() {
             const gtaRelease = new Date('November 19, 2026');
-            const today = new Date();
-            const diff = gtaRelease - today;
+            const diff = gtaRelease - new Date();
             const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
             document.getElementById('gta-timer').innerText = `Dans ${days} jours`;
         }
@@ -304,40 +325,32 @@
             }
         }
 
-        // --- GESTION DES TRANSITIONS (POINT 4) ---
         function switchPage(id) {
             const pages = document.querySelectorAll('.page');
-            pages.forEach(p => {
-                p.style.opacity = '0';
-                p.style.transform = 'translateY(10px)';
-            });
-
+            pages.forEach(p => { p.style.opacity = '0'; p.style.transform = 'translateY(10px)'; });
             setTimeout(() => {
                 pages.forEach(p => p.classList.remove('active'));
                 document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-                
                 const activePage = document.getElementById(id);
                 activePage.classList.add('active');
-                
-                setTimeout(() => {
-                    activePage.style.opacity = '1';
-                    activePage.style.transform = 'translateY(0)';
-                }, 50);
-
+                setTimeout(() => { activePage.style.opacity = '1'; activePage.style.transform = 'translateY(0)'; }, 50);
                 const navBtn = document.getElementById('nav-' + id);
                 if(navBtn) navBtn.classList.add('active');
             }, 300);
-            
             window.scrollTo(0,0);
+        }
+
+        function initApp() {
+            document.getElementById('discover-carousel').innerHTML = gamesData.slice(0, 8).map(g => createCard(g, true)).join('') + `<div onclick="switchPage('library')" style="flex:0 0 140px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.05); border-radius:20px; color:var(--accent-pink); font-weight:700; scroll-snap-align: start; height:240px;">+ VOIR TOUT</div>`;
+            const allPlats = [...new Set(gamesData.flatMap(g => Array.isArray(g.plat) ? g.plat : [g.plat]))];
+            document.getElementById('chip-container').innerHTML = `<button class="chip-filter chip-filter-all active" onclick="filterByPlatform('all')">ALL</button>` + allPlats.map(p => `<button class="chip-filter chip-${p} chip-filter-${p}" onclick="filterByPlatform('${p}')">${p.toUpperCase()}</button>`).join('');
+            document.getElementById('backlog-grid').innerHTML = backlogData.map(g => createCard(g)).join('');
+            handleSearch();
         }
 
         // INIT
         updateTimers();
-        document.getElementById('discover-carousel').innerHTML = gamesData.slice(0, 4).map(g => createCard(g, true)).join('') + `<div onclick="switchPage('library')" style="flex:0 0 140px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.05); border-radius:20px; color:var(--accent-pink); font-weight:700; scroll-snap-align: start; height:240px;">+ VOIR TOUT</div>`;
-        const allPlats = [...new Set(gamesData.flatMap(g => Array.isArray(g.plat) ? g.plat : [g.plat]))];
-        document.getElementById('chip-container').innerHTML = `<button class="chip-filter chip-filter-all active" onclick="filterByPlatform('all')">ALL</button>` + allPlats.map(p => `<button class="chip-filter chip-${p} chip-filter-${p}" onclick="filterByPlatform('${p}')">${p.toUpperCase()}</button>`).join('');
-        document.getElementById('backlog-grid').innerHTML = backlogData.map(g => createCard(g)).join('');
-        handleSearch();
+        loadRealData();
     </script>
 </body>
 </html>
