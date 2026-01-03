@@ -13,25 +13,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-          
       - name: Install dependencies
         run: pip install requests
-        
       - name: Run Archivist Script
         env:
           STEAM_KEY: ${{ secrets.STEAM_KEY }}
           STEAM_ID: ${{ secrets.STEAM_ID }}
         run: python update_steam.py
-        
       - name: Commit and push changes
         run: |
           git config --global user.name "GamerStats-Bot"
           git config --global user.email "bot@gamerstats.local"
-          git add steam_data.json history.json
-          git commit -m "Update Steam data and History" || exit 0
-          git push origin main # On précise bien la branche principale
+          git add steam_data.json history.json || true
+          git commit -m "Update stats" || true
+          git push
