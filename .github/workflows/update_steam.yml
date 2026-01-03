@@ -1,11 +1,11 @@
 name: Steam Archivist Bot
 on:
   schedule:
-    - cron: '0 * * * *' # Le robot travaille toutes les heures
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 permissions:
-  contents: write # Autorisation spéciale pour créer history.json
+  contents: write
 
 jobs:
   build:
@@ -34,4 +34,4 @@ jobs:
           git config --global user.email "bot@gamerstats.local"
           git add steam_data.json history.json
           git commit -m "Update Steam data and History" || exit 0
-          git push
+          git push origin main # On précise bien la branche principale
