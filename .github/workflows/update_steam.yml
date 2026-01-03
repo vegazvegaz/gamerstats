@@ -26,5 +26,5 @@ jobs:
           git config --global user.name "GamerStats-Bot"
           git config --global user.email "bot@gamerstats.local"
           git add steam_data.json history.json || true
-          git commit -m "Auto-update stats" || true
+          git commit -m "Auto-update stats and history" || true
           git push origin main
