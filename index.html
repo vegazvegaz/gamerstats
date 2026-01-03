@@ -3,55 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GamerStats V76 - Historical Engine</title>
+    <title>GamerStats V77 - Final Restoration</title>
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Styles V75 conservés à 100% pour la Library et les Insights */
-        :root { --bg: #000; --accent-pink: #FF4B7D; --accent-blue: #0A84FF; --text-dim: #8E8E93; --radius-lg: 32px; --radius-md: 24px; --color-steam: #2a475e; }
+        :root {
+            --bg: #000000;
+            --accent-pink: #FF4B7D;
+            --accent-blue: #0A84FF;
+            --text-dim: #8E8E93;
+            --radius-lg: 32px;
+            --radius-md: 24px;
+            --color-steam: #2a475e;
+        }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg); color: #FFF; font-family: 'SF Pro Display', sans-serif; margin: 0; padding-bottom: 160px; overflow-x: hidden; }
+        body { background-color: var(--bg); color: #FFFFFF; font-family: 'SF Pro Display', sans-serif; margin: 0; padding-bottom: 160px; overflow-x: hidden; }
         .bg-glow { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 10% 20%, rgba(255, 75, 125, 0.12), transparent 45%); z-index: -1; filter: blur(80px); }
         main { padding: 0 20px; max-width: 500px; margin: 0 auto; width: 100%; }
+        
         .page { display: none; opacity: 0; transform: translateY(10px); transition: 0.4s ease; }
         .page.active { display: block; opacity: 1; transform: translateY(0); }
+
         h1 { font-size: 42px; font-weight: 800; letter-spacing: -1.5px; margin: 30px 0 25px 0; }
+        h2 { font-size: 22px; font-weight: 700; margin: 0; }
+        .date { font-size: 11px; font-weight: 800; color: var(--text-dim); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; display: block; padding-top: 20px; }
+
+        /* --- BENTO GRID --- */
         .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 30px; }
         .bento-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-md); padding: 18px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
         .bento-label { font-size: 8px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; z-index: 1; }
         .bento-val { font-size: 22px; font-weight: 800; z-index: 1; }
-        .lib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px 20px; width: 100%; }
-        .game-card { text-decoration: none; color: white; display: block; cursor: pointer; }
-        .poster { width: 100%; height: 0; padding-bottom: 150%; position: relative; border-radius: var(--radius-md); overflow: hidden; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 12px; }
-        .poster img { position: absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; }
+        .bento-sub { font-size: 9px; color: var(--text-dim); font-weight: 600; z-index: 1; }
+
+        /* --- GRILLE 2 COLONNES --- */
+        .lib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px 20px; width: 100%; align-items: flex-start; }
+        .game-card { text-decoration: none; color: white; display: block; cursor: pointer; min-width: 0; }
+        .poster { width: 100%; height: 0; padding-bottom: 150%; position: relative; border-radius: var(--radius-md); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); background: #1c1c1e; margin-bottom: 12px; }
+        .poster img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
         .game-title { display: block; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .search-box { background: rgba(255,255,255,0.08); border-radius: 18px; padding: 12px 18px; display: flex; align-items: center; margin-bottom: 20px; }
-        .search-box input { background: none; border: none; color: white; margin-left: 10px; width: 100%; outline: none; }
+
+        /* --- UI ELEMENTS (RESTORED V55) --- */
+        .search-box { background: rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 12px 18px; display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; }
+        .search-box input { background: none; border: none; color: white; margin-left: 10px; font-size: 16px; width: 100%; outline: none; }
         .filter-scroll { display: flex; overflow-x: auto; gap: 10px; margin: 0 -20px 25px; padding: 0 20px; scrollbar-width: none; }
-        .chip-filter { padding: 10px 18px; border-radius: 30px; font-size: 11px; font-weight: 800; color: white; border: none; opacity: 0.4; }
-        .chip-filter.active { opacity: 1; }
-        .insight-card { background: rgba(255,255,255,0.04); border-radius: 32px; padding: 25px; margin-bottom: 20px; }
+        .chip-filter { padding: 10px 18px; border-radius: 30px; font-size: 11px; font-weight: 800; color: white; white-space: nowrap; border: none; opacity: 0.4; }
+        .chip-filter.active { opacity: 1; transform: scale(1.05); }
+        .sort-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
+
+        /* --- INSIGHTS GRAPHS (RESTORED V55) --- */
+        .insight-card { background: rgba(255,255,255,0.04); border-radius: var(--radius-lg); padding: 25px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
         .habit-grid { display: flex; align-items: flex-end; justify-content: space-between; height: 100px; }
         .habit-bar-box { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 10%; height: 100%; }
         .habit-bar { width: 100%; background: var(--accent-blue); border-radius: 4px; opacity: 0.8; transition: height 0.6s ease; }
-        .nav { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(18,18,20,0.85); backdrop-filter: blur(30px); border-radius: 40px; padding: 12px 10px; display: flex; justify-content: space-around; z-index: 1000; }
+        .time-dist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .time-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 20px; text-align: center; }
+
+        /* --- POPIN --- */
+        #sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 2000; display: none; opacity: 0; transition: 0.3s; }
+        #game-sheet { position: fixed; bottom: 0; left: 0; width: 100%; height: 82vh; background: #0a0a0a; border-radius: 32px 32px 0 0; z-index: 2001; transform: translateY(100%); transition: 0.4s cubic-bezier(0.32, 0.72, 0, 1); overflow-y: auto; padding: 30px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .sheet-halo { position: absolute; top: -10%; left: 0; width: 100%; height: 60%; background: radial-gradient(circle at center, var(--sheet-glow, var(--accent-pink)) 0%, transparent 75%); filter: blur(60px); opacity: 0.4; z-index: -1; }
+        .sh-poster-box { width: 180px; aspect-ratio: 2/3; border-radius: 20px; overflow: hidden; margin: 0 auto 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
+
+        /* --- NAVBAR --- */
+        .nav { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(18, 18, 20, 0.85); backdrop-filter: blur(30px); border-radius: 40px; padding: 12px 10px; display: flex; justify-content: space-around; z-index: 1000; }
         .nav-link { text-decoration: none; color: var(--text-dim); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-link.active { color: #FFF; }
-        #game-sheet { position: fixed; bottom: 0; left: 0; width: 100%; height: 80vh; background: #0a0a0a; border-radius: 32px 32px 0 0; z-index: 2001; transform: translateY(100%); transition: 0.4s cubic-bezier(0.32, 0.72, 0, 1); overflow-y: auto; padding: 30px; }
     </style>
 </head>
 <body>
     <div class="bg-glow"></div>
     <canvas id="colorCanvas" style="display:none;"></canvas>
+    <div id="sheet-overlay" onclick="closeSheet()"></div>
     
+    <div id="game-sheet">
+        <div style="width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: -15px auto 30px;"></div>
+        <div class="sheet-halo" id="sheetHalo"></div>
+        <div class="sh-poster-box"><img id="sh-img" src="" crossOrigin="anonymous" style="width:100%; height:100%; object-fit:cover;"></div>
+        <h2 style="font-size:32px; font-weight:800; text-align:center; margin-bottom:5px;" id="sh-title">Game</h2>
+        <div id="sh-meta" style="text-align:center; color:var(--text-dim); font-size:14px; font-weight:600; margin-bottom:30px; text-transform:uppercase;">Steam Cloud • Live</div>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:35px;">
+            <button style="padding:16px; border-radius:18px; border:none; background:var(--accent-pink); color:white; font-weight:700;">✓ En cours</button>
+            <button style="padding:16px; border-radius:18px; border:none; background:rgba(255,255,255,0.1); color:white; font-weight:700;">Terminé</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:35px; text-align:center;">
+            <div>🕒<b id="sh-hours" style="display:block; font-size:15px; margin-top:5px;">0h</b><span style="font-size:8px; color:var(--text-dim); font-weight:800;">HEURES</span></div>
+            <div>🏆<b style="display:block; font-size:15px; margin-top:5px;">92%</b><span style="font-size:8px; color:var(--text-dim); font-weight:800;">COMP.</span></div>
+            <div>📊<b style="display:block; font-size:15px; margin-top:5px;">#12</b><span style="font-size:8px; color:var(--text-dim); font-weight:800;">RANG</span></div>
+            <div>🏷️<b style="display:block; font-size:15px; margin-top:5px;">RPG</b><span style="font-size:8px; color:var(--text-dim); font-weight:800;">GENRE</span></div>
+        </div>
+
+        <h3 style="font-size:18px; font-weight:700; margin-bottom:12px;">Présentation</h3>
+        <p id="sh-desc" style="font-size:14px; line-height:1.6; color:rgba(255,255,255,0.8); margin-bottom:40px;"></p>
+    </div>
+
     <main>
         <section id="discover" class="page active">
             <span class="date">Samedi 3 Janvier 2026</span>
             <h1>Discover</h1>
             <div class="bento-grid">
-                <div class="bento-card" style="grid-column: span 4; background: #111113;"><span class="bento-label">Temps total Steam</span><div class="bento-val" id="totalHoursDisplay">0h</div></div>
+                <div class="bento-card" style="grid-column: span 4; background: #111113;"><span class="bento-label">Temps total Steam</span><div class="bento-val" id="totalHoursDisplay" style="font-size: 32px;">0h</div></div>
                 <div class="bento-card" style="grid-column: span 2;"><span class="bento-label">En Jours</span><div class="bento-val" id="totalDaysDisplay" style="color:var(--accent-blue);">0</div></div>
                 <div class="bento-card" style="grid-column: span 3;"><span class="bento-label">14 derniers jours</span><div class="bento-val" id="recentHours" style="color:var(--accent-pink);">0h</div></div>
-                <div class="bento-card" style="grid-column: span 3;"><span class="bento-label">Activité aujourd'hui</span><div class="bento-val" id="todayHours" style="color:var(--accent-blue);">0h</div></div>
+                <div class="bento-card" style="grid-column: span 3;"><span class="bento-label">Aujourd'hui</span><div class="bento-val" id="todayHours" style="color:var(--accent-blue);">0h</div></div>
             </div>
             <div class="section-header"><h2>Recently Played</h2></div>
             <div id="discover-grid" class="lib-grid"></div>
@@ -59,30 +114,28 @@
 
         <section id="library" class="page">
             <h1>Library</h1>
-            <div class="search-box">🔍<input type="text" id="searchInput" oninput="handleSearch()" placeholder="Rechercher..."></div>
+            <div class="search-box"><span>🔍</span><input type="text" id="searchInput" oninput="handleSearch()" placeholder="Rechercher..."></div>
             <div class="filter-scroll">
                 <button class="chip-filter active" id="chip-all" onclick="filterByPlatform('all')">ALL</button>
-                <button class="chip-filter" style="background:var(--color-steam)" id="chip-steam">STEAM</button>
+                <button class="chip-filter" style="background:var(--color-steam)" id="chip-steam" onclick="filterByPlatform('steam')">STEAM</button>
             </div>
+            <div class="sort-bar"><span id="gameCount" style="font-size:12px; font-weight:700; color:var(--text-dim);">0 JEUX</span><select id="sortSelect" onchange="handleSort()" style="background:none; border:none; color:var(--accent-pink); font-weight:800; font-size:12px;"><option value="alpha">ALPHABÉTIQUE</option><option value="hours">TEMPS DE JEU</option></select></div>
             <div id="library-grid" class="lib-grid"></div>
         </section>
 
         <section id="insights" class="page">
             <h1>Insights</h1>
-            <div class="insight-card">
-                <span class="bento-label">Activité sur 7 jours (Réelle)</span>
-                <div class="habit-grid" id="habitGrid" style="margin-top:20px;">
-                    </div>
-            </div>
-            <div class="insight-card"><span class="bento-label">Santé de la Collection</span>
-                <div style="display:flex; gap:10px; margin:15px 0 10px;"><div id="comp-fill" style="height:8px; background:var(--accent-pink); border-radius:4px;"></div><div style="flex:1; height:8px; background:rgba(255,255,255,0.1); border-radius:4px;"></div></div>
-                <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700;"><span style="color:var(--accent-pink)">LANCÉS</span><span style="color:var(--text-dim)">BACKLOG</span></div>
-            </div>
+            <div class="insight-card"><span class="bento-label">Habitudes hebdomadaires (Réel)</span><div class="habit-grid" id="habitGrid" style="margin-top:20px;"></div></div>
+            <div class="insight-card"><span class="bento-label">Moment de la journée</span><div class="time-dist-grid" style="margin-top:15px;">
+                <div class="time-box">🌅<br><span style="font-size:14px; font-weight:800;">8%</span><br><span style="font-size:8px;">MATIN</span></div>
+                <div class="time-box" style="border-color:var(--accent-pink);">🌙<br><span style="font-size:14px; font-weight:800; color:var(--accent-pink);">48%</span><br><span style="font-size:8px;">SOIRÉE</span></div>
+            </div></div>
+            <div class="insight-card"><span class="bento-label">Santé de la Collection</span><div style="display:flex; gap:10px; margin:15px 0 10px;"><div id="comp-fill" style="height:8px; background:var(--accent-pink); border-radius:4px;"></div><div style="flex:1; height:8px; background:rgba(255,255,255,0.1); border-radius:4px;"></div></div><div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700;"><span style="color:var(--accent-pink)">LANCÉS</span><span style="color:var(--text-dim)">BACKLOG</span></div></div>
         </section>
 
         <section id="backlog" class="page">
             <h1>Backlog</h1>
-            <div class="insight-card" style="border-color:var(--accent-pink);"><span style="color:var(--accent-pink); font-weight:800;">FILTRÉ :</span><br><span style="font-size:12px; color:var(--text-dim);">Jeux lancés moins de 3 heures.</span></div>
+            <div class="insight-card" style="border-color:var(--accent-pink);"><span style="color:var(--accent-pink); font-weight:800;">FILTRÉ :</span><br><span style="font-size:12px; color:var(--text-dim);">Jeux lancés moins de 3 heures sur Steam.</span></div>
             <div id="backlog-grid" class="lib-grid"></div>
         </section>
     </main>
@@ -100,75 +153,63 @@
 
         async function loadAppData() {
             try {
-                // Chargement des données Steam
                 const steamRes = await fetch('steam_data.json');
                 const rawSteam = await steamRes.json();
-                
-                // Chargement de l'historique
                 try {
                     const historyRes = await fetch('history.json');
                     historyData = await historyRes.json();
-                } catch(e) { console.warn("Historique pas encore créé."); }
-
+                } catch(e) { console.warn("Historique absent."); }
                 processData(rawSteam.response.games);
-            } catch (e) { console.error("Erreur chargement:", e); }
+            } catch (e) { console.error(e); }
+        }
+
+        function updateDynamicAura(img) {
+            const canvas = document.getElementById('colorCanvas');
+            const ctx = canvas.getContext('2d');
+            try {
+                canvas.width = 1; canvas.height = 1;
+                ctx.drawImage(img, 0, 0, 1, 1);
+                const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+                document.getElementById('sheetHalo').style.setProperty('--sheet-glow', `rgb(${r},${g},${b})`);
+            } catch(e) { document.getElementById('sheetHalo').style.setProperty('--sheet-glow', '#FF4B7D'); }
         }
 
         function processData(games) {
             gamesData = games.map(g => ({
-                appid: g.appid,
-                name: g.name,
-                hours: Math.round(g.playtime_forever / 60),
-                recent: Math.round((g.playtime_2weeks || 0) / 60),
-                lastPlayed: g.rtime_last_played || 0,
-                plat: "steam",
-                img: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${g.appid}/library_600x900.jpg`
+                appid: g.appid, name: g.name, hours: Math.round(g.playtime_forever / 60),
+                recent: Math.round((g.playtime_2weeks || 0) / 60), lastPlayed: g.rtime_last_played || 0,
+                plat: "steam", img: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${g.appid}/library_600x900.jpg`
             }));
-
             updateUI();
         }
 
         function updateUI() {
             const totalHours = gamesData.reduce((acc, g) => acc + g.hours, 0);
             const playedGames = gamesData.filter(g => g.hours > 0).length;
-
             document.getElementById('totalHoursDisplay').innerText = totalHours.toLocaleString() + 'h';
             document.getElementById('totalDaysDisplay').innerText = Math.round(totalHours / 24);
+            document.getElementById('recentHours').innerText = gamesData.reduce((acc, g) => acc + g.recent, 0) + 'h';
             document.getElementById('comp-fill').style.width = Math.round((playedGames/gamesData.length)*100) + '%';
             
-            // Calcul activité du jour réelle
             const dates = Object.keys(historyData).sort();
             if(dates.length >= 2) {
-                const today = dates[dates.length - 1];
-                const yesterday = dates[dates.length - 2];
-                const diff = historyData[today] - historyData[yesterday];
+                const diff = historyData[dates[dates.length-1]] - historyData[dates[dates.length-2]];
                 document.getElementById('todayHours').innerText = (diff > 0 ? diff : 0) + 'h';
             }
-
-            // Génération graphique 7 jours
             renderHabitChart(dates);
-            
             initGrids();
         }
 
         function renderHabitChart(dates) {
             const container = document.getElementById('habitGrid');
             container.innerHTML = '';
-            const last7Dates = dates.slice(-7);
-            
-            const maxDiff = 12; // Échelle max à 12h pour le design
-
-            last7Dates.forEach((date, i) => {
+            const last7 = dates.slice(-7);
+            last7.forEach((date, i) => {
                 if (i === 0) return;
-                const diff = historyData[date] - historyData[last7Dates[i-1]];
-                const height = Math.min((diff / maxDiff) * 100, 100);
-                const dayName = new Date(date).toLocaleDateString('fr-FR', {weekday: 'narrow'});
-                
-                container.innerHTML += `
-                    <div class="habit-bar-box">
-                        <div class="habit-bar" style="height:${height > 5 ? height : 5}%; ${height > 50 ? 'background:var(--accent-pink)' : ''}"></div>
-                        <span class="bento-sub">${dayName}</span>
-                    </div>`;
+                const diff = historyData[date] - historyData[last7[i-1]];
+                const h = Math.min((diff / 12) * 100, 100);
+                const day = new Date(date).toLocaleDateString('fr-FR', {weekday: 'narrow'});
+                container.innerHTML += `<div class="habit-bar-box"><div class="habit-bar" style="height:${h||5}%; ${h > 50 ? 'background:var(--accent-pink)' : ''}"></div><span style="font-size:9px;">${day}</span></div>`;
             });
         }
 
@@ -176,25 +217,64 @@
             const recent = [...gamesData].sort((a,b) => b.lastPlayed - a.lastPlayed).slice(0, 12);
             document.getElementById('discover-grid').innerHTML = recent.map(g => createCard(g)).join('');
             document.getElementById('library-grid').innerHTML = gamesData.map(g => createCard(g)).join('');
+            document.getElementById('gameCount').innerText = `${gamesData.length} JEUX`;
             const backlog = gamesData.filter(g => g.hours < 3).sort((a,b) => b.lastPlayed - a.lastPlayed);
             document.getElementById('backlog-grid').innerHTML = backlog.map(g => createCard(g)).join('');
         }
 
         function createCard(game) {
-            return `<div class="game-card">
-                <div class="poster"><img src="${game.img}" onerror="this.src='https://via.placeholder.com/200x300?text=GAME'"></div>
+            return `<div class="game-card" onclick="openSheet('${game.appid}')">
+                <div class="poster"><img src="${game.img}"></div>
                 <span class="game-title">${game.name}</span>
-                <div style="font-size:12px; color:var(--text-dim); margin-top:4px;">${game.hours}h</div>
+                <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">${game.hours}h <span style="font-size:7px; background:var(--color-steam); color:white; padding:1px 4px; border-radius:3px; float:right;">STEAM</span></div>
             </div>`;
         }
 
+        async function openSheet(appid) {
+            const game = gamesData.find(g => g.appid == appid);
+            const imgEl = document.getElementById('sh-img');
+            imgEl.src = game.img;
+            imgEl.onload = () => updateDynamicAura(imgEl);
+            document.getElementById('sh-title').innerText = game.name;
+            document.getElementById('sh-hours').innerText = game.hours + 'h';
+            document.getElementById('sh-desc').innerText = "Récupération du synopsis...";
+            document.getElementById('sheet-overlay').style.display = 'block';
+            setTimeout(() => { document.getElementById('sheet-overlay').style.opacity = '1'; document.getElementById('game-sheet').style.transform = 'translateY(0)'; }, 10);
+            try {
+                const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://store.steampowered.com/api/appdetails?appids=${appid}&l=french`)}`);
+                const data = JSON.parse((await res.json()).contents);
+                document.getElementById('sh-desc').innerHTML = data[appid].data.short_description || "Données synchronisées.";
+            } catch(e) { document.getElementById('sh-desc').innerText = "Synopsis non disponible."; }
+        }
+
+        function closeSheet() { document.getElementById('sheet-overlay').style.opacity = '0'; document.getElementById('game-sheet').style.transform = 'translateY(100%)'; setTimeout(() => document.getElementById('sheet-overlay').style.display = 'none', 300); }
+
+        function handleSearch() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const results = gamesData.filter(g => g.name.toLowerCase().includes(term));
+            document.getElementById('library-grid').innerHTML = results.map(g => createCard(g)).join('');
+            document.getElementById('gameCount').innerText = `${results.length} JEUX`;
+        }
+
+        function filterByPlatform(plat) {
+            document.querySelectorAll('.chip-filter').forEach(c => c.classList.remove('active'));
+            if(plat === 'all') { document.getElementById('chip-all').classList.add('active'); handleSearch(); }
+            else { document.getElementById('chip-steam').classList.add('active'); const results = gamesData.filter(g => g.plat === plat); document.getElementById('library-grid').innerHTML = results.map(g => createCard(g)).join(''); document.getElementById('gameCount').innerText = `${results.length} JEUX`; }
+        }
+
+        function handleSort() {
+            const val = document.getElementById('sortSelect').value;
+            if(val === 'hours') gamesData.sort((a,b) => b.hours - a.hours);
+            else gamesData.sort((a,b) => a.name.localeCompare(b.name));
+            handleSearch();
+        }
+
         function switchPage(id) {
-            document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; });
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            const p = document.getElementById(id);
-            p.classList.add('active');
-            setTimeout(() => p.style.opacity = '1', 50);
-            document.getElementById('nav-' + id).classList.add('active');
+            document.getElementById('nav-'+id).classList.add('active');
+            window.scrollTo(0,0);
         }
 
         loadAppData();
