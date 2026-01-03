@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GamerStats V77 - Final Restoration</title>
+    <title>GamerStats V78 - Bento Gallery</title>
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -12,60 +12,57 @@
             --accent-blue: #0A84FF;
             --text-dim: #8E8E93;
             --radius-lg: 32px;
-            --radius-md: 24px;
+            --radius-md: 20px;
             --color-steam: #2a475e;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: #FFFFFF; font-family: 'SF Pro Display', sans-serif; margin: 0; padding-bottom: 160px; overflow-x: hidden; }
-        .bg-glow { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 10% 20%, rgba(255, 75, 125, 0.12), transparent 45%); z-index: -1; filter: blur(80px); }
-        main { padding: 0 20px; max-width: 500px; margin: 0 auto; width: 100%; }
+        .bg-glow { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 10% 20%, rgba(255, 75, 125, 0.1), transparent 45%); z-index: -1; filter: blur(80px); }
+        main { padding: 0 15px; max-width: 500px; margin: 0 auto; width: 100%; }
         
         .page { display: none; opacity: 0; transform: translateY(10px); transition: 0.4s ease; }
         .page.active { display: block; opacity: 1; transform: translateY(0); }
 
-        h1 { font-size: 42px; font-weight: 800; letter-spacing: -1.5px; margin: 30px 0 25px 0; }
-        h2 { font-size: 22px; font-weight: 700; margin: 0; }
-        .date { font-size: 11px; font-weight: 800; color: var(--text-dim); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; display: block; padding-top: 20px; }
+        h1 { font-size: 38px; font-weight: 800; letter-spacing: -1.5px; margin: 25px 0 20px 0; }
+        h2 { font-size: 20px; font-weight: 700; margin: 0; }
+        .date { font-size: 10px; font-weight: 800; color: var(--text-dim); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; display: block; padding-top: 20px; }
 
-        /* --- BENTO GRID --- */
+        /* --- BENTO SYSTEM (RESIZED) --- */
         .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 30px; }
-        .bento-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-md); padding: 18px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
-        .bento-label { font-size: 8px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; z-index: 1; }
-        .bento-val { font-size: 22px; font-weight: 800; z-index: 1; }
-        .bento-sub { font-size: 9px; color: var(--text-dim); font-weight: 600; z-index: 1; }
+        .bento-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-md); padding: 15px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+        .bento-emoji { font-size: 24px; margin-bottom: 5px; display: block; }
+        .bento-label { font-size: 8px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+        .bento-val { font-size: 24px; font-weight: 800; line-height: 1; }
+        .bento-sub { font-size: 9px; color: var(--text-dim); font-weight: 600; margin-top: 4px; }
 
-        /* --- GRILLE 2 COLONNES --- */
-        .lib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px 20px; width: 100%; align-items: flex-start; }
+        /* --- GRILLE 3 COLONNES (UNIFIÉE) --- */
+        .lib-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px 10px; width: 100%; align-items: flex-start; }
         .game-card { text-decoration: none; color: white; display: block; cursor: pointer; min-width: 0; }
-        .poster { width: 100%; height: 0; padding-bottom: 150%; position: relative; border-radius: var(--radius-md); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); background: #1c1c1e; margin-bottom: 12px; }
+        .poster { width: 100%; height: 0; padding-bottom: 150%; position: relative; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); background: #1c1c1e; margin-bottom: 8px; }
         .poster img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        .game-title { display: block; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .game-title { display: block; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* --- UI ELEMENTS (RESTORED V55) --- */
-        .search-box { background: rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 12px 18px; display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; }
-        .search-box input { background: none; border: none; color: white; margin-left: 10px; font-size: 16px; width: 100%; outline: none; }
-        .filter-scroll { display: flex; overflow-x: auto; gap: 10px; margin: 0 -20px 25px; padding: 0 20px; scrollbar-width: none; }
-        .chip-filter { padding: 10px 18px; border-radius: 30px; font-size: 11px; font-weight: 800; color: white; white-space: nowrap; border: none; opacity: 0.4; }
-        .chip-filter.active { opacity: 1; transform: scale(1.05); }
-        .sort-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
+        /* --- UI ELEMENTS V55 RESTORED --- */
+        .search-box { background: rgba(255, 255, 255, 0.08); border-radius: 15px; padding: 10px 15px; display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 15px; }
+        .search-box input { background: none; border: none; color: white; margin-left: 8px; font-size: 14px; width: 100%; outline: none; }
+        .filter-scroll { display: flex; overflow-x: auto; gap: 8px; margin: 0 -15px 20px; padding: 0 15px; scrollbar-width: none; }
+        .chip-filter { padding: 8px 15px; border-radius: 20px; font-size: 10px; font-weight: 800; color: white; border: none; opacity: 0.4; }
+        .chip-filter.active { opacity: 1; }
 
-        /* --- INSIGHTS GRAPHS (RESTORED V55) --- */
-        .insight-card { background: rgba(255,255,255,0.04); border-radius: var(--radius-lg); padding: 25px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
-        .habit-grid { display: flex; align-items: flex-end; justify-content: space-between; height: 100px; }
-        .habit-bar-box { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 10%; height: 100%; }
-        .habit-bar { width: 100%; background: var(--accent-blue); border-radius: 4px; opacity: 0.8; transition: height 0.6s ease; }
-        .time-dist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .time-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 20px; text-align: center; }
+        /* --- INSIGHTS GRAPHS V55 RESTORED --- */
+        .insight-card { background: rgba(255,255,255,0.04); border-radius: 28px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
+        .habit-grid { display: flex; align-items: flex-end; justify-content: space-between; height: 80px; }
+        .habit-bar-box { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 10%; }
+        .habit-bar { width: 100%; background: var(--accent-blue); border-radius: 3px; opacity: 0.8; transition: height 0.6s ease; }
 
-        /* --- POPIN --- */
+        /* --- POPIN & DYNAMIC AURA --- */
         #sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 2000; display: none; opacity: 0; transition: 0.3s; }
-        #game-sheet { position: fixed; bottom: 0; left: 0; width: 100%; height: 82vh; background: #0a0a0a; border-radius: 32px 32px 0 0; z-index: 2001; transform: translateY(100%); transition: 0.4s cubic-bezier(0.32, 0.72, 0, 1); overflow-y: auto; padding: 30px; border-top: 1px solid rgba(255,255,255,0.1); }
+        #game-sheet { position: fixed; bottom: 0; left: 0; width: 100%; height: 82vh; background: #0a0a0a; border-radius: 32px 32px 0 0; z-index: 2001; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1); overflow-y: auto; padding: 25px; border-top: 1px solid rgba(255,255,255,0.1); }
         .sheet-halo { position: absolute; top: -10%; left: 0; width: 100%; height: 60%; background: radial-gradient(circle at center, var(--sheet-glow, var(--accent-pink)) 0%, transparent 75%); filter: blur(60px); opacity: 0.4; z-index: -1; }
-        .sh-poster-box { width: 180px; aspect-ratio: 2/3; border-radius: 20px; overflow: hidden; margin: 0 auto 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
 
         /* --- NAVBAR --- */
-        .nav { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(18, 18, 20, 0.85); backdrop-filter: blur(30px); border-radius: 40px; padding: 12px 10px; display: flex; justify-content: space-around; z-index: 1000; }
+        .nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; background: rgba(18, 18, 20, 0.85); backdrop-filter: blur(30px); border-radius: 40px; padding: 10px; display: flex; justify-content: space-around; z-index: 1000; border: 1px solid rgba(255,255,255,0.08); }
         .nav-link { text-decoration: none; color: var(--text-dim); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-link.active { color: #FFF; }
     </style>
@@ -76,26 +73,24 @@
     <div id="sheet-overlay" onclick="closeSheet()"></div>
     
     <div id="game-sheet">
-        <div style="width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: -15px auto 30px;"></div>
+        <div style="width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: -10px auto 25px;"></div>
         <div class="sheet-halo" id="sheetHalo"></div>
-        <div class="sh-poster-box"><img id="sh-img" src="" crossOrigin="anonymous" style="width:100%; height:100%; object-fit:cover;"></div>
-        <h2 style="font-size:32px; font-weight:800; text-align:center; margin-bottom:5px;" id="sh-title">Game</h2>
-        <div id="sh-meta" style="text-align:center; color:var(--text-dim); font-size:14px; font-weight:600; margin-bottom:30px; text-transform:uppercase;">Steam Cloud • Live</div>
+        <div style="width: 160px; aspect-ratio: 2/3; border-radius: 18px; overflow: hidden; margin: 0 auto 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1);"><img id="sh-img" src="" crossOrigin="anonymous" style="width:100%; height:100%; object-fit:cover;"></div>
+        <h2 style="font-size:28px; font-weight:800; text-align:center; margin-bottom:5px;" id="sh-title">Game</h2>
+        <div id="sh-meta" style="text-align:center; color:var(--text-dim); font-size:12px; font-weight:600; margin-bottom:25px; text-transform:uppercase;">Steam Cloud • Data</div>
         
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:35px;">
-            <button style="padding:16px; border-radius:18px; border:none; background:var(--accent-pink); color:white; font-weight:700;">✓ En cours</button>
-            <button style="padding:16px; border-radius:18px; border:none; background:rgba(255,255,255,0.1); color:white; font-weight:700;">Terminé</button>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:30px;">
+            <button style="padding:14px; border-radius:15px; border:none; background:var(--accent-pink); color:white; font-weight:700; font-size:13px;">✓ En cours</button>
+            <button style="padding:14px; border-radius:15px; border:none; background:rgba(255,255,255,0.1); color:white; font-weight:700; font-size:13px;">Terminé</button>
         </div>
 
-        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:35px; text-align:center;">
-            <div>🕒<b id="sh-hours" style="display:block; font-size:15px; margin-top:5px;">0h</b><span style="font-size:8px; color:var(--text-dim); font-weight:800;">HEURES</span></div>
-            <div>🏆<b style="display:block; font-size:15px; margin-top:5px;">92%</b><span style="font-size:8px; color:var(--text-dim); font-weight:800;">COMP.</span></div>
-            <div>📊<b style="display:block; font-size:15px; margin-top:5px;">#12</b><span style="font-size:8px; color:var(--text-dim); font-weight:800;">RANG</span></div>
-            <div>🏷️<b style="display:block; font-size:15px; margin-top:5px;">RPG</b><span style="font-size:8px; color:var(--text-dim); font-weight:800;">GENRE</span></div>
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-bottom:30px; text-align:center;">
+            <div>🕒<b id="sh-hours" style="display:block; font-size:14px; margin-top:5px;">0h</b><span style="font-size:7px; color:var(--text-dim); font-weight:800;">HEURES</span></div>
+            <div>🏆<b>92%</b><span style="font-size:7px; color:var(--text-dim); font-weight:800; display:block; margin-top:5px;">COMP.</span></div>
+            <div>📊<b>#12</b><span style="font-size:7px; color:var(--text-dim); font-weight:800; display:block; margin-top:5px;">RANG</span></div>
+            <div>🏷️<b>RPG</b><span style="font-size:7px; color:var(--text-dim); font-weight:800; display:block; margin-top:5px;">GENRE</span></div>
         </div>
-
-        <h3 style="font-size:18px; font-weight:700; margin-bottom:12px;">Présentation</h3>
-        <p id="sh-desc" style="font-size:14px; line-height:1.6; color:rgba(255,255,255,0.8); margin-bottom:40px;"></p>
+        <p id="sh-desc" style="font-size:13px; line-height:1.6; color:rgba(255,255,255,0.8); margin-bottom:30px;"></p>
     </div>
 
     <main>
@@ -103,48 +98,81 @@
             <span class="date">Samedi 3 Janvier 2026</span>
             <h1>Discover</h1>
             <div class="bento-grid">
-                <div class="bento-card" style="grid-column: span 4; background: #111113;"><span class="bento-label">Temps total Steam</span><div class="bento-val" id="totalHoursDisplay" style="font-size: 32px;">0h</div></div>
-                <div class="bento-card" style="grid-column: span 2;"><span class="bento-label">En Jours</span><div class="bento-val" id="totalDaysDisplay" style="color:var(--accent-blue);">0</div></div>
-                <div class="bento-card" style="grid-column: span 3;"><span class="bento-label">14 derniers jours</span><div class="bento-val" id="recentHours" style="color:var(--accent-pink);">0h</div></div>
-                <div class="bento-card" style="grid-column: span 3;"><span class="bento-label">Aujourd'hui</span><div class="bento-val" id="todayHours" style="color:var(--accent-blue);">0h</div></div>
+                <div class="bento-card" style="grid-column: span 4; background: #111113;">
+                    <span class="bento-emoji">⏳</span>
+                    <span class="bento-label">Temps total Steam</span>
+                    <div class="bento-val" id="totalHoursDisplay">0h</div>
+                </div>
+                <div class="bento-card" style="grid-column: span 2;">
+                    <span class="bento-emoji">📅</span>
+                    <span class="bento-label">En Jours</span>
+                    <div class="bento-val" id="totalDaysDisplay" style="color:var(--accent-blue);">0</div>
+                </div>
+                <div class="bento-card" style="grid-column: span 3;">
+                    <span class="bento-emoji">🕰️</span>
+                    <span class="bento-label">14 derniers jours</span>
+                    <div class="bento-val" id="recentHours" style="color:var(--accent-pink);">0h</div>
+                </div>
+                <div class="bento-card" style="grid-column: span 3;">
+                    <span class="bento-emoji">⏰</span>
+                    <span class="bento-label">Aujourd'hui</span>
+                    <div class="bento-val" id="todayHours" style="color:var(--accent-blue);">0h</div>
+                </div>
+                <div class="bento-card" style="grid-column: span 6; background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <span class="bento-label">Investissement moyen</span>
+                            <div class="bento-val" id="avgPlaytime">0h <span style="font-size:12px; color:var(--text-dim);">/ jeu</span></div>
+                        </div>
+                        <span style="font-size:32px;">📊</span>
+                    </div>
+                </div>
             </div>
-            <div class="section-header"><h2>Recently Played</h2></div>
+            <div style="margin-bottom:15px;"><h2>Recently Played</h2></div>
             <div id="discover-grid" class="lib-grid"></div>
         </section>
 
         <section id="library" class="page">
             <h1>Library</h1>
-            <div class="search-box"><span>🔍</span><input type="text" id="searchInput" oninput="handleSearch()" placeholder="Rechercher..."></div>
+            <div class="search-box"><span>🔍</span><input type="text" id="searchInput" oninput="handleSearch()" placeholder="Rechercher un jeu..."></div>
             <div class="filter-scroll">
                 <button class="chip-filter active" id="chip-all" onclick="filterByPlatform('all')">ALL</button>
                 <button class="chip-filter" style="background:var(--color-steam)" id="chip-steam" onclick="filterByPlatform('steam')">STEAM</button>
             </div>
-            <div class="sort-bar"><span id="gameCount" style="font-size:12px; font-weight:700; color:var(--text-dim);">0 JEUX</span><select id="sortSelect" onchange="handleSort()" style="background:none; border:none; color:var(--accent-pink); font-weight:800; font-size:12px;"><option value="alpha">ALPHABÉTIQUE</option><option value="hours">TEMPS DE JEU</option></select></div>
             <div id="library-grid" class="lib-grid"></div>
         </section>
 
         <section id="insights" class="page">
             <h1>Insights</h1>
-            <div class="insight-card"><span class="bento-label">Habitudes hebdomadaires (Réel)</span><div class="habit-grid" id="habitGrid" style="margin-top:20px;"></div></div>
-            <div class="insight-card"><span class="bento-label">Moment de la journée</span><div class="time-dist-grid" style="margin-top:15px;">
-                <div class="time-box">🌅<br><span style="font-size:14px; font-weight:800;">8%</span><br><span style="font-size:8px;">MATIN</span></div>
-                <div class="time-box" style="border-color:var(--accent-pink);">🌙<br><span style="font-size:14px; font-weight:800; color:var(--accent-pink);">48%</span><br><span style="font-size:8px;">SOIRÉE</span></div>
-            </div></div>
-            <div class="insight-card"><span class="bento-label">Santé de la Collection</span><div style="display:flex; gap:10px; margin:15px 0 10px;"><div id="comp-fill" style="height:8px; background:var(--accent-pink); border-radius:4px;"></div><div style="flex:1; height:8px; background:rgba(255,255,255,0.1); border-radius:4px;"></div></div><div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700;"><span style="color:var(--accent-pink)">LANCÉS</span><span style="color:var(--text-dim)">BACKLOG</span></div></div>
+            <div class="insight-card">
+                <span class="bento-label">Activité Hebdomadaire (Réelle)</span>
+                <div class="habit-grid" id="habitGrid" style="margin-top:20px;"></div>
+            </div>
+            <div class="insight-card">
+                <span class="bento-label">Santé de la Collection</span>
+                <div style="display:flex; gap:8px; margin:15px 0 10px;">
+                    <div id="comp-fill" style="height:8px; background:var(--accent-pink); border-radius:4px;"></div>
+                    <div style="flex:1; height:8px; background:rgba(255,255,255,0.1); border-radius:4px;"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:9px; font-weight:700;">
+                    <span style="color:var(--accent-pink)">LANCÉS</span>
+                    <span style="color:var(--text-dim)">BACKLOG (0h)</span>
+                </div>
+            </div>
         </section>
 
         <section id="backlog" class="page">
             <h1>Backlog</h1>
-            <div class="insight-card" style="border-color:var(--accent-pink);"><span style="color:var(--accent-pink); font-weight:800;">FILTRÉ :</span><br><span style="font-size:12px; color:var(--text-dim);">Jeux lancés moins de 3 heures sur Steam.</span></div>
+            <div class="insight-card" style="border-color:var(--accent-pink);"><span style="color:var(--accent-pink); font-weight:800;">AUTO-FILTRE :</span><br><span style="font-size:11px; color:var(--text-dim);">Jeux lancés moins de 3 heures sur Steam.</span></div>
             <div id="backlog-grid" class="lib-grid"></div>
         </section>
     </main>
 
     <nav class="nav">
-        <a href="javascript:void(0)" onclick="switchPage('discover')" id="nav-discover" class="nav-link active">🏠<span style="font-size:9px; font-weight:700;">DISCOVER</span></a>
-        <a href="javascript:void(0)" onclick="switchPage('library')" id="nav-library" class="nav-link">🎮<span style="font-size:9px; font-weight:700;">LIBRARY</span></a>
-        <a href="javascript:void(0)" onclick="switchPage('insights')" id="nav-insights" class="nav-link">📈<span style="font-size:9px; font-weight:700;">INSIGHTS</span></a>
-        <a href="javascript:void(0)" onclick="switchPage('backlog')" id="nav-backlog" class="nav-link">🗓️<span style="font-size:9px; font-weight:700;">BACKLOG</span></a>
+        <a href="javascript:void(0)" onclick="switchPage('discover')" id="nav-discover" class="nav-link active">🏠</a>
+        <a href="javascript:void(0)" onclick="switchPage('library')" id="nav-library" class="nav-link">🎮</a>
+        <a href="javascript:void(0)" onclick="switchPage('insights')" id="nav-insights" class="nav-link">📈</a>
+        <a href="javascript:void(0)" onclick="switchPage('backlog')" id="nav-backlog" class="nav-link">🗓️</a>
     </nav>
 
     <script>
@@ -158,7 +186,7 @@
                 try {
                     const historyRes = await fetch('history.json');
                     historyData = await historyRes.json();
-                } catch(e) { console.warn("Historique absent."); }
+                } catch(e) { console.warn("Attente du premier archivage."); }
                 processData(rawSteam.response.games);
             } catch (e) { console.error(e); }
         }
@@ -178,18 +206,20 @@
             gamesData = games.map(g => ({
                 appid: g.appid, name: g.name, hours: Math.round(g.playtime_forever / 60),
                 recent: Math.round((g.playtime_2weeks || 0) / 60), lastPlayed: g.rtime_last_played || 0,
-                plat: "steam", img: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${g.appid}/library_600x900.jpg`
+                img: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${g.appid}/library_600x900.jpg`
             }));
             updateUI();
         }
 
         function updateUI() {
             const totalHours = gamesData.reduce((acc, g) => acc + g.hours, 0);
-            const playedGames = gamesData.filter(g => g.hours > 0).length;
+            const playedGames = gamesData.filter(g => g.hours > 0);
+            
             document.getElementById('totalHoursDisplay').innerText = totalHours.toLocaleString() + 'h';
             document.getElementById('totalDaysDisplay').innerText = Math.round(totalHours / 24);
             document.getElementById('recentHours').innerText = gamesData.reduce((acc, g) => acc + g.recent, 0) + 'h';
-            document.getElementById('comp-fill').style.width = Math.round((playedGames/gamesData.length)*100) + '%';
+            document.getElementById('avgPlaytime').innerText = Math.round(totalHours / playedGames.length) + 'h';
+            document.getElementById('comp-fill').style.width = Math.round((playedGames.length/gamesData.length)*100) + '%';
             
             const dates = Object.keys(historyData).sort();
             if(dates.length >= 2) {
@@ -207,7 +237,7 @@
             last7.forEach((date, i) => {
                 if (i === 0) return;
                 const diff = historyData[date] - historyData[last7[i-1]];
-                const h = Math.min((diff / 12) * 100, 100);
+                const h = Math.min((diff / 10) * 100, 100);
                 const day = new Date(date).toLocaleDateString('fr-FR', {weekday: 'narrow'});
                 container.innerHTML += `<div class="habit-bar-box"><div class="habit-bar" style="height:${h||5}%; ${h > 50 ? 'background:var(--accent-pink)' : ''}"></div><span style="font-size:9px;">${day}</span></div>`;
             });
@@ -217,7 +247,6 @@
             const recent = [...gamesData].sort((a,b) => b.lastPlayed - a.lastPlayed).slice(0, 12);
             document.getElementById('discover-grid').innerHTML = recent.map(g => createCard(g)).join('');
             document.getElementById('library-grid').innerHTML = gamesData.map(g => createCard(g)).join('');
-            document.getElementById('gameCount').innerText = `${gamesData.length} JEUX`;
             const backlog = gamesData.filter(g => g.hours < 3).sort((a,b) => b.lastPlayed - a.lastPlayed);
             document.getElementById('backlog-grid').innerHTML = backlog.map(g => createCard(g)).join('');
         }
@@ -226,7 +255,7 @@
             return `<div class="game-card" onclick="openSheet('${game.appid}')">
                 <div class="poster"><img src="${game.img}"></div>
                 <span class="game-title">${game.name}</span>
-                <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">${game.hours}h <span style="font-size:7px; background:var(--color-steam); color:white; padding:1px 4px; border-radius:3px; float:right;">STEAM</span></div>
+                <div style="font-size:10px; color:var(--text-dim); margin-top:2px;">${game.hours}h</div>
             </div>`;
         }
 
@@ -237,14 +266,14 @@
             imgEl.onload = () => updateDynamicAura(imgEl);
             document.getElementById('sh-title').innerText = game.name;
             document.getElementById('sh-hours').innerText = game.hours + 'h';
-            document.getElementById('sh-desc').innerText = "Récupération du synopsis...";
+            document.getElementById('sh-desc').innerText = "Chargement...";
             document.getElementById('sheet-overlay').style.display = 'block';
             setTimeout(() => { document.getElementById('sheet-overlay').style.opacity = '1'; document.getElementById('game-sheet').style.transform = 'translateY(0)'; }, 10);
             try {
                 const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://store.steampowered.com/api/appdetails?appids=${appid}&l=french`)}`);
                 const data = JSON.parse((await res.json()).contents);
-                document.getElementById('sh-desc').innerHTML = data[appid].data.short_description || "Données synchronisées.";
-            } catch(e) { document.getElementById('sh-desc').innerText = "Synopsis non disponible."; }
+                document.getElementById('sh-desc').innerHTML = data[appid].data.short_description;
+            } catch(e) { document.getElementById('sh-desc').innerText = "Données synchronisées."; }
         }
 
         function closeSheet() { document.getElementById('sheet-overlay').style.opacity = '0'; document.getElementById('game-sheet').style.transform = 'translateY(100%)'; setTimeout(() => document.getElementById('sheet-overlay').style.display = 'none', 300); }
@@ -253,20 +282,12 @@
             const term = document.getElementById('searchInput').value.toLowerCase();
             const results = gamesData.filter(g => g.name.toLowerCase().includes(term));
             document.getElementById('library-grid').innerHTML = results.map(g => createCard(g)).join('');
-            document.getElementById('gameCount').innerText = `${results.length} JEUX`;
         }
 
         function filterByPlatform(plat) {
             document.querySelectorAll('.chip-filter').forEach(c => c.classList.remove('active'));
             if(plat === 'all') { document.getElementById('chip-all').classList.add('active'); handleSearch(); }
-            else { document.getElementById('chip-steam').classList.add('active'); const results = gamesData.filter(g => g.plat === plat); document.getElementById('library-grid').innerHTML = results.map(g => createCard(g)).join(''); document.getElementById('gameCount').innerText = `${results.length} JEUX`; }
-        }
-
-        function handleSort() {
-            const val = document.getElementById('sortSelect').value;
-            if(val === 'hours') gamesData.sort((a,b) => b.hours - a.hours);
-            else gamesData.sort((a,b) => a.name.localeCompare(b.name));
-            handleSearch();
+            else { document.getElementById('chip-steam').classList.add('active'); const results = gamesData.filter(g => g.plat === plat); document.getElementById('library-grid').innerHTML = results.map(g => createCard(g)).join(''); }
         }
 
         function switchPage(id) {
