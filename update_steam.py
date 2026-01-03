@@ -3,8 +3,8 @@ import json
 import os
 from datetime import datetime
 
-STEAM_KEY = os.environ['STEAM_KEY']
-STEAM_ID = os.environ['STEAM_ID']
+STEAM_KEY = os.environ['645EB0A81C05DE3962B5902819BB75E9']
+STEAM_ID = os.environ['76561198025652371']
 
 def update_data():
     try:
