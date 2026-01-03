@@ -1,21 +1,37 @@
-name: Update Steam Stats
+name: Steam Archivist Bot
 on:
   schedule:
-    - cron: '0 * * * *' # S'exécute toutes les heures
-  workflow_dispatch: # Permet de le lancer manuellement
+    - cron: '0 * * * *' # Le robot travaille toutes les heures
+  workflow_dispatch:
+
+permissions:
+  contents: write # Autorisation spéciale pour créer history.json
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Fetch Steam Data
+      
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+          
+      - name: Install dependencies
+        run: pip install requests
+        
+      - name: Run Archivist Script
+        env:
+          STEAM_KEY: ${{ secrets.STEAM_KEY }}
+          STEAM_ID: ${{ secrets.STEAM_ID }}
+        run: python update_steam.py
+        
+      - name: Commit and push changes
         run: |
-          curl "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${{ secrets.STEAM_API_KEY }}&steamid=${{ secrets.STEAM_ID }}&format=json&include_appinfo=true" > steam_data.json
-      - name: Commit and push
-        run: |
-          git config --global user.name 'SteamBot'
-          git config --global user.email 'bot@gamerstats.com'
-          git add steam_data.json
-          git commit -m "Update steam stats" || exit 0
+          git config --global user.name "GamerStats-Bot"
+          git config --global user.email "bot@gamerstats.local"
+          git add steam_data.json history.json
+          git commit -m "Update Steam data and History" || exit 0
           git push
