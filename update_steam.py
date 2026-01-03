@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime
 
-# Identifiants intégrés directement
+# Identifiants fournis intégrés directement
 STEAM_KEY = "645EB0A81C05DE3962B5902819BB75E9"
 STEAM_ID = "76561198025652371"
 
@@ -13,11 +13,11 @@ def update_data():
         response = requests.get(url)
         data = response.json()
         
-        # Sauvegarde de la bibliothèque
+        # Sauvegarde bibliothèque
         with open('steam_data.json', 'w') as f:
             json.dump(data, f)
 
-        # Archivage pour l'historique
+        # Gestion historique
         history_file = 'history.json'
         today = datetime.now().strftime('%Y-%m-%d')
         total_hrs = sum(g.get('playtime_forever', 0) for g in data['response']['games']) // 60
@@ -29,14 +29,15 @@ def update_data():
             history = {}
 
         history[today] = total_hrs
-        history = dict(sorted(history.items())[-90:]) # On garde 3 mois
+        # On garde 90 entrées
+        history = dict(sorted(history.items())[-90:])
 
         with open(history_file, 'w') as f:
             json.dump(history, f)
             
-        print("Synchronisation réussie.")
+        print("Mise à jour réussie.")
     except Exception as e:
-        print(f"Erreur technique : {e}")
+        print(f"Erreur : {e}")
 
 if __name__ == "__main__":
     update_data()
