@@ -19,15 +19,12 @@ jobs:
           python-version: '3.x'
       - name: Install dependencies
         run: pip install requests
-      - name: Run Archivist Script
-        env:
-          STEAM_KEY: ${{ secrets.STEAM_KEY }}
-          STEAM_ID: ${{ secrets.STEAM_ID }}
+      - name: Run Script
         run: python update_steam.py
-      - name: Commit and push changes
+      - name: Push results
         run: |
           git config --global user.name "GamerStats-Bot"
           git config --global user.email "bot@gamerstats.local"
           git add steam_data.json history.json || true
-          git commit -m "Update stats" || true
-          git push
+          git commit -m "Auto-update stats" || true
+          git push origin main
